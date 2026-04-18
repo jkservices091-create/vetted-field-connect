@@ -58,7 +58,7 @@ const SignupWorker = () => {
         <form onSubmit={onSubmit} className="mt-8 space-y-4">
           <Field id="full_name" label="Full name" value={form.full_name} onChange={(v) => setForm({ ...form, full_name: v })} placeholder="Marcus Reyes" />
           <Field id="email" label="Email" type="email" value={form.email} onChange={(v) => setForm({ ...form, email: v })} placeholder="you@example.com" />
-          <Field id="phone" label="Phone" value={form.phone} onChange={(v) => setForm({ ...form, phone: v })} placeholder="(209) 555-0142" />
+          <Field id="phone" label="Phone" value={form.phone} onChange={(v) => setForm({ ...form, phone: v })} placeholder="(314) 555-0142" />
           <Field id="password" label="Password" type="password" value={form.password} onChange={(v) => setForm({ ...form, password: v })} placeholder="At least 8 characters" />
 
           <Button type="submit" size="lg" className="w-full h-12 mt-2" disabled={loading}>
