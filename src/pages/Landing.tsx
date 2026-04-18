@@ -100,7 +100,7 @@ const Landing = () => {
             "Every worker is ID-verified with checked references",
             "See ratings from real contractors before you hire",
             "Post jobs free — pay only when you book a worker",
-            "Workers keep 100% of their wage. Flat 10% service fee on top.",
+            "10–15% service fee on bookings — drops as your worker reviews go up",
           ]}
           cta={{ label: "Post your first job", to: "/for-hiring" }}
         />
@@ -110,9 +110,9 @@ const Landing = () => {
           title="Get paid for showing up and doing it right."
           points={[
             "Local jobs from contractors who pay on time",
-            "Build a profile that travels with you",
-            "Earn Verified Pro status — better jobs, higher pay",
-            "100% free, always. No fees. Ever.",
+            "Free to join, free to bid — always",
+            "Sliding-scale platform cut: 5% to start, as low as 2% for top-rated pros",
+            "Your rating sets your rate — good work means you keep more",
           ]}
           cta={{ label: "Apply to work", to: "/apply" }}
         />
@@ -168,7 +168,7 @@ const Landing = () => {
           <div>
             <h2 className="display-lg text-trust-foreground">Ready to put real hands on the job?</h2>
             <p className="mt-3 text-trust-foreground/75 max-w-md">
-              Free to post. 10% service fee only when you book a worker. <Link to="/pricing" className="text-primary underline-offset-4 hover:underline">See pricing →</Link>
+              Free to post. 10–15% service fee only when you book — your fee drops as your reviews go up. <Link to="/pricing" className="text-primary underline-offset-4 hover:underline">See pricing →</Link>
             </p>
           </div>
           <div className="flex flex-col sm:flex-row gap-3 md:justify-end">
