@@ -7,6 +7,7 @@ const links = [
   { href: "#lanes", label: "Lanes" },
   { href: "#vetting", label: "Vetting" },
   { href: "#tiers", label: "Tiers" },
+  { href: "#faq", label: "FAQ" },
 ];
 
 export const Header = () => {
