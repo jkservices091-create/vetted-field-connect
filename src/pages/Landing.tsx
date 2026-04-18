@@ -99,10 +99,10 @@ const Landing = () => {
           points={[
             "Every worker is ID-verified with checked references",
             "See ratings from real contractors before you hire",
-            "Post jobs free — pay only when you book a worker",
-            "10–15% service fee on bookings — drops as your worker reviews go up",
+            "Plans from $29/mo — pick what fits how often you hire",
+            "Earn up to 20% off your plan with great worker reviews",
           ]}
-          cta={{ label: "Post your first job", to: "/for-hiring" }}
+          cta={{ label: "Start hiring — 30-day trial", to: "/for-hiring" }}
         />
         <ValueCard
           dark
@@ -110,9 +110,9 @@ const Landing = () => {
           title="Get paid for showing up and doing it right."
           points={[
             "Local jobs from contractors who pay on time",
-            "Free to join, free to bid — always",
-            "Sliding-scale platform cut: 5% to start, as low as 2% for top-rated pros",
-            "Your rating sets your rate — good work means you keep more",
+            "$15/month — locked in. 30-day free trial.",
+            "Top-rated pros keep up to 98% of every paycheck",
+            "Your rating sets your take-home — good work pays better",
           ]}
           cta={{ label: "Apply to work", to: "/apply" }}
         />
@@ -168,11 +168,11 @@ const Landing = () => {
           <div>
             <h2 className="display-lg text-trust-foreground">Ready to put real hands on the job?</h2>
             <p className="mt-3 text-trust-foreground/75 max-w-md">
-              Free to post. 10–15% service fee only when you book — your fee drops as your reviews go up. <Link to="/pricing" className="text-primary underline-offset-4 hover:underline">See pricing →</Link>
+              Hirer plans from $29/mo. Workers $15/mo flat. 30-day free trial both sides. <Link to="/pricing" className="text-primary underline-offset-4 hover:underline">See pricing →</Link>
             </p>
           </div>
           <div className="flex flex-col sm:flex-row gap-3 md:justify-end">
-            <Button asChild size="lg" className="h-12 px-6"><Link to="/for-hiring">Post a job free</Link></Button>
+            <Button asChild size="lg" className="h-12 px-6"><Link to="/for-hiring">Start hiring — 30-day trial</Link></Button>
             <Button asChild size="lg" variant="outline" className="h-12 px-6 bg-transparent border-trust-foreground/30 text-trust-foreground hover:bg-trust-foreground/10 hover:text-trust-foreground">
               <Link to="/apply">I'm a worker</Link>
             </Button>
