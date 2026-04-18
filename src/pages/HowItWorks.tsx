@@ -72,6 +72,29 @@ const HowItWorks = () => {
         </div>
       </section>
 
+      {/* PRICING SUMMARY */}
+      <section className="bg-muted/40 border-y border-border">
+        <div className="container py-16">
+          <span className="eyebrow">Pricing</span>
+          <h2 className="display-lg mt-3">Workers always free. Hirers pay only when they book.</h2>
+          <div className="mt-8 grid gap-4 md:grid-cols-2 max-w-4xl">
+            <div className="rounded-lg border border-success/30 bg-success/5 p-6">
+              <span className="text-xs uppercase tracking-wider font-bold text-success">For workers</span>
+              <p className="display-md text-3xl mt-2">100% free</p>
+              <p className="text-sm text-muted-foreground mt-2">No application fee. No subscription. No cut of your wage. You keep every dollar you earn.</p>
+            </div>
+            <div className="rounded-lg border border-border bg-card p-6">
+              <span className="text-xs uppercase tracking-wider font-bold text-primary">For hirers</span>
+              <p className="display-md text-3xl mt-2">10% service fee</p>
+              <p className="text-sm text-muted-foreground mt-2">Free to post jobs and review bids. Charged 10% on top of the worker's wage only when you book someone.</p>
+            </div>
+          </div>
+          <div className="mt-6">
+            <Button asChild variant="outline"><Link to="/pricing">See full pricing breakdown</Link></Button>
+          </div>
+        </div>
+      </section>
+
       {/* SAFETY EXCLUSION */}
       <section className="container pb-16">
         <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-6 flex gap-4">

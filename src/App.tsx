@@ -7,6 +7,7 @@ import { ProtectedRoute } from "@/components/ProtectedRoute";
 
 import Landing from "./pages/Landing";
 import HowItWorks from "./pages/HowItWorks";
+import Pricing from "./pages/Pricing";
 import SignupWorker from "./pages/SignupWorker";
 import SignupHirer from "./pages/SignupHirer";
 import Login from "./pages/Login";
@@ -44,6 +45,7 @@ const App = () => (
           {/* Public */}
           <Route path="/" element={<Landing />} />
           <Route path="/how-it-works" element={<HowItWorks />} />
+          <Route path="/pricing" element={<Pricing />} />
           <Route path="/apply" element={<SignupWorker />} />
           <Route path="/for-hiring" element={<SignupHirer />} />
           <Route path="/login" element={<Login />} />

@@ -13,11 +13,12 @@ export function PublicFooter() {
         </div>
         <FooterCol title="For hirers">
           <FooterLink to="/for-hiring">Post a job</FooterLink>
+          <FooterLink to="/pricing">Pricing</FooterLink>
           <FooterLink to="/how-it-works">How it works</FooterLink>
           <FooterLink to="/login">Log in</FooterLink>
         </FooterCol>
         <FooterCol title="For workers">
-          <FooterLink to="/apply">Apply to work</FooterLink>
+          <FooterLink to="/apply">Apply to work — free</FooterLink>
           <FooterLink to="/how-it-works">Vetting process</FooterLink>
           <FooterLink to="/login">Log in</FooterLink>
         </FooterCol>

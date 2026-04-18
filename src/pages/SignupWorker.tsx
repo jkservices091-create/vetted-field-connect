@@ -70,9 +70,12 @@ const SignupWorker = () => {
           </p>
         </form>
 
-        <div className="mt-8 rounded-lg bg-muted/50 border border-border p-4 text-sm text-muted-foreground flex gap-3">
-          <ShieldCheck className="h-5 w-5 text-primary flex-shrink-0" />
-          <p>Your info is private. We only show your profile to hirers after our trust team approves you.</p>
+        <div className="mt-8 rounded-lg border border-success/30 bg-success/10 p-4 text-sm flex gap-3">
+          <ShieldCheck className="h-5 w-5 text-success flex-shrink-0 mt-0.5" />
+          <div>
+            <p className="font-bold text-foreground">100% free, always.</p>
+            <p className="text-muted-foreground mt-1">No application fees, no subscriptions, no cut of your wage. You keep every dollar you earn. The hirer pays a service fee — never you.</p>
+          </div>
         </div>
       </section>
     </PublicLayout>
