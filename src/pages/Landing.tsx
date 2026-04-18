@@ -17,7 +17,7 @@ const Landing = () => {
             <h1 className="display-xl mt-4 text-trust-foreground">
               Reliable hands.<br />
               <span className="text-primary">Real jobs.</span><br />
-              No no-shows.
+              Ready to work.
             </h1>
             <p className="mt-6 text-lg text-trust-foreground/75 max-w-md">
               FieldHands connects contractors, builders, and landscapers with
