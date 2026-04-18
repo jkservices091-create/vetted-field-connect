@@ -76,17 +76,18 @@ const HowItWorks = () => {
       <section className="bg-muted/40 border-y border-border">
         <div className="container py-16">
           <span className="eyebrow">Pricing</span>
-          <h2 className="display-lg mt-3">Workers always free. Hirers pay only when they book.</h2>
+          <h2 className="display-lg mt-3">Your rating sets your rate. On both sides.</h2>
+          <p className="mt-3 text-muted-foreground max-w-2xl">Free to join, free to post, free to bid. Fees only happen on completed jobs — and the better your reviews, the lower your fee.</p>
           <div className="mt-8 grid gap-4 md:grid-cols-2 max-w-4xl">
             <div className="rounded-lg border border-success/30 bg-success/5 p-6">
               <span className="text-xs uppercase tracking-wider font-bold text-success">For workers</span>
-              <p className="display-md text-3xl mt-2">100% free</p>
-              <p className="text-sm text-muted-foreground mt-2">No application fee. No subscription. No cut of your wage. You keep every dollar you earn.</p>
+              <p className="display-md text-3xl mt-2">2% – 10%</p>
+              <p className="text-sm text-muted-foreground mt-2">Sliding cut from your wage based on your rating. New workers start at 5%. Top-rated pros pay just 2% — keep up to 98% of every paycheck.</p>
             </div>
             <div className="rounded-lg border border-border bg-card p-6">
               <span className="text-xs uppercase tracking-wider font-bold text-primary">For hirers</span>
-              <p className="display-md text-3xl mt-2">10% service fee</p>
-              <p className="text-sm text-muted-foreground mt-2">Free to post jobs and review bids. Charged 10% on top of the worker's wage only when you book someone.</p>
+              <p className="display-md text-3xl mt-2">10% – 15%</p>
+              <p className="text-sm text-muted-foreground mt-2">Service fee on top of the job total when you book. New hirers start at 15%. Earn your fee down to 10% with strong worker reviews.</p>
             </div>
           </div>
           <div className="mt-6">
