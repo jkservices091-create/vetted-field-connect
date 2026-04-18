@@ -111,10 +111,10 @@ const HirerProfile = () => {
             </div>
           </div>
           <div className="grid sm:grid-cols-2 gap-5">
-            <Field id="phone" label="Phone" value={form.phone} onChange={(v) => setForm({ ...form, phone: v })} placeholder="(209) 555-0188" />
+            <Field id="phone" label="Phone" value={form.phone} onChange={(v) => setForm({ ...form, phone: v })} placeholder="(314) 555-0188" />
             <Field id="email" label="Contact email" type="email" value={form.email} onChange={(v) => setForm({ ...form, email: v })} />
           </div>
-          <Field id="service_area" label="Service area" value={form.service_area} onChange={(v) => setForm({ ...form, service_area: v })} placeholder="Stockton, Lodi, Manteca" />
+          <Field id="service_area" label="Service area" value={form.service_area} onChange={(v) => setForm({ ...form, service_area: v })} placeholder="St. Louis, St. Charles, O'Fallon" />
 
           <div className="space-y-1.5">
             <Label htmlFor="about">About your company</Label>

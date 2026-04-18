@@ -22,7 +22,7 @@ export function PublicFooter() {
           <FooterLink to="/login">Log in</FooterLink>
         </FooterCol>
         <FooterCol title="Company">
-          <span className="text-sm text-trust-foreground/60">Stockton, CA · MVP</span>
+          <span className="text-sm text-trust-foreground/60">St. Louis, MO · MVP</span>
           <span className="text-sm text-trust-foreground/60">© {new Date().getFullYear()} FieldHands</span>
         </FooterCol>
       </div>
