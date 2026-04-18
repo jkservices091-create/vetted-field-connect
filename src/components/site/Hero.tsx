@@ -26,7 +26,7 @@ export const Hero = () => {
           <h1 className="font-display text-5xl font-semibold uppercase leading-[0.95] tracking-tight text-balance sm:text-6xl lg:text-7xl">
             Vetted hands.<br />
             <span className="text-primary">Real jobsites.</span><br />
-            They show up.
+            Boots on the ground.
           </h1>
 
           <p className="mt-6 max-w-xl text-base text-steel-200 text-pretty sm:text-lg">
