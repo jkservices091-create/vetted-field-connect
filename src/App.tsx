@@ -3,8 +3,25 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import Index from "./pages/Index.tsx";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
+
+import Landing from "./pages/Landing";
+import HowItWorks from "./pages/HowItWorks";
+import SignupWorker from "./pages/SignupWorker";
+import SignupHirer from "./pages/SignupHirer";
+import Login from "./pages/Login";
+import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound.tsx";
+
+import HirerDashboard from "./pages/hire/HirerDashboard";
+import HirerProfile from "./pages/hire/HirerProfile";
+
+import WorkerDashboard from "./pages/work/WorkerDashboard";
+import WorkerProfile from "./pages/work/WorkerProfile";
+
+import AdminDashboard from "./pages/admin/AdminDashboard";
+
+import { ComingSoon } from "./pages/ComingSoon";
 
 const queryClient = new QueryClient();
 
@@ -15,8 +32,39 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Index />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          {/* Public */}
+          <Route path="/" element={<Landing />} />
+          <Route path="/how-it-works" element={<HowItWorks />} />
+          <Route path="/apply" element={<SignupWorker />} />
+          <Route path="/for-hiring" element={<SignupHirer />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+
+          {/* Hiring party */}
+          <Route path="/hire" element={<ProtectedRoute requireRole="hiring_party"><HirerDashboard /></ProtectedRoute>} />
+          <Route path="/hire/profile" element={<ProtectedRoute requireRole="hiring_party"><HirerProfile /></ProtectedRoute>} />
+          <Route path="/hire/jobs" element={<ProtectedRoute requireRole="hiring_party"><ComingSoon role="hiring_party" title="My jobs" description="Job list ships in the next phase." /></ProtectedRoute>} />
+          <Route path="/hire/jobs/new" element={<ProtectedRoute requireRole="hiring_party"><ComingSoon role="hiring_party" title="Post a job" description="Job posting ships in the next phase." /></ProtectedRoute>} />
+          <Route path="/hire/messages" element={<ProtectedRoute requireRole="hiring_party"><ComingSoon role="hiring_party" title="Messages" description="In-app messaging ships in Phase 5." /></ProtectedRoute>} />
+          <Route path="/hire/reviews" element={<ProtectedRoute requireRole="hiring_party"><ComingSoon role="hiring_party" title="Reviews" description="Reviews ship in Phase 6." /></ProtectedRoute>} />
+
+          {/* Worker */}
+          <Route path="/work" element={<ProtectedRoute requireRole="worker"><WorkerDashboard /></ProtectedRoute>} />
+          <Route path="/work/profile" element={<ProtectedRoute requireRole="worker"><WorkerProfile /></ProtectedRoute>} />
+          <Route path="/work/verification" element={<ProtectedRoute requireRole="worker"><ComingSoon role="worker" title="Verification center" description="Vetting intake ships in Phase 3." /></ProtectedRoute>} />
+          <Route path="/work/jobs" element={<ProtectedRoute requireRole="worker"><ComingSoon role="worker" title="Find work" description="Job browse ships in Phase 4." /></ProtectedRoute>} />
+          <Route path="/work/bookings" element={<ProtectedRoute requireRole="worker"><ComingSoon role="worker" title="My bookings" description="Bookings ship in Phase 4." /></ProtectedRoute>} />
+          <Route path="/work/messages" element={<ProtectedRoute requireRole="worker"><ComingSoon role="worker" title="Messages" description="Messaging ships in Phase 5." /></ProtectedRoute>} />
+          <Route path="/work/reviews" element={<ProtectedRoute requireRole="worker"><ComingSoon role="worker" title="Reviews" description="Reviews ship in Phase 6." /></ProtectedRoute>} />
+
+          {/* Admin */}
+          <Route path="/admin" element={<ProtectedRoute requireRole="admin"><AdminDashboard /></ProtectedRoute>} />
+          <Route path="/admin/queue" element={<ProtectedRoute requireRole="admin"><ComingSoon role="admin" title="Vetting queue" description="Phase 7." /></ProtectedRoute>} />
+          <Route path="/admin/workers" element={<ProtectedRoute requireRole="admin"><ComingSoon role="admin" title="Workers" description="Phase 7." /></ProtectedRoute>} />
+          <Route path="/admin/hiring-parties" element={<ProtectedRoute requireRole="admin"><ComingSoon role="admin" title="Hirers" description="Phase 7." /></ProtectedRoute>} />
+          <Route path="/admin/jobs" element={<ProtectedRoute requireRole="admin"><ComingSoon role="admin" title="Jobs" description="Phase 7." /></ProtectedRoute>} />
+          <Route path="/admin/reviews" element={<ProtectedRoute requireRole="admin"><ComingSoon role="admin" title="Reviews" description="Phase 7." /></ProtectedRoute>} />
+
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
