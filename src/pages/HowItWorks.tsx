@@ -76,18 +76,18 @@ const HowItWorks = () => {
       <section className="bg-muted/40 border-y border-border">
         <div className="container py-16">
           <span className="eyebrow">Pricing</span>
-          <h2 className="display-lg mt-3">Your rating sets your rate. On both sides.</h2>
-          <p className="mt-3 text-muted-foreground max-w-2xl">Free to join, free to post, free to bid. Fees only happen on completed jobs — and the better your reviews, the lower your fee.</p>
+          <h2 className="display-lg mt-3">Subscription pricing. Ratings unlock better rates.</h2>
+          <p className="mt-3 text-muted-foreground max-w-2xl">Predictable monthly cost on both sides. The better your reviews, the more you save (hirers) or take home (workers).</p>
           <div className="mt-8 grid gap-4 md:grid-cols-2 max-w-4xl">
             <div className="rounded-lg border border-success/30 bg-success/5 p-6">
               <span className="text-xs uppercase tracking-wider font-bold text-success">For workers</span>
-              <p className="display-md text-3xl mt-2">2% – 10%</p>
-              <p className="text-sm text-muted-foreground mt-2">Sliding cut from your wage based on your rating. New workers start at 5%. Top-rated pros pay just 2% — keep up to 98% of every paycheck.</p>
+              <p className="display-md text-3xl mt-2">$15<span className="text-base text-muted-foreground">/mo</span></p>
+              <p className="text-sm text-muted-foreground mt-2">Flat subscription. Plus a sliding 2–10% cut from each payout based on your rating — top-rated pros keep 98% of their wage. 30-day free trial.</p>
             </div>
             <div className="rounded-lg border border-border bg-card p-6">
               <span className="text-xs uppercase tracking-wider font-bold text-primary">For hirers</span>
-              <p className="display-md text-3xl mt-2">10% – 15%</p>
-              <p className="text-sm text-muted-foreground mt-2">Service fee on top of the job total when you book. New hirers start at 15%. Earn your fee down to 10% with strong worker reviews.</p>
+              <p className="display-md text-3xl mt-2">From $29<span className="text-base text-muted-foreground">/mo</span></p>
+              <p className="text-sm text-muted-foreground mt-2">Four tiers from 1 to unlimited active jobs. Earn up to 20% off your plan with strong worker reviews. 30-day free trial.</p>
             </div>
           </div>
           <div className="mt-6">

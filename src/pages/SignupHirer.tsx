@@ -72,7 +72,7 @@ const SignupHirer = () => {
 
         <div className="mt-8 rounded-lg bg-muted/50 border border-border p-4 text-sm text-muted-foreground flex gap-3">
           <Briefcase className="h-5 w-5 text-primary flex-shrink-0" />
-          <p>Free to post. New hirers pay a 15% service fee on bookings — earn it down to 10% with strong worker reviews. No subscriptions, no posting fees. <Link to="/pricing" className="text-primary font-semibold">See pricing</Link></p>
+          <p>Plans from <strong>$29/mo</strong> with a <strong>30-day free trial</strong>. Earn up to 20% off your plan with strong worker reviews. <Link to="/pricing" className="text-primary font-semibold">See pricing</Link></p>
         </div>
       </section>
     </PublicLayout>

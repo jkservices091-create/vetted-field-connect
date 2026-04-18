@@ -18,7 +18,7 @@ export function PublicFooter() {
           <FooterLink to="/login">Log in</FooterLink>
         </FooterCol>
         <FooterCol title="For workers">
-          <FooterLink to="/apply">Apply to work — free</FooterLink>
+          <FooterLink to="/apply">Apply to work — $15/mo</FooterLink>
           <FooterLink to="/how-it-works">Vetting process</FooterLink>
           <FooterLink to="/login">Log in</FooterLink>
         </FooterCol>
