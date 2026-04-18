@@ -102,7 +102,7 @@ const WorkerProfile = () => {
           <div className="grid sm:grid-cols-2 gap-5">
             <div className="space-y-1.5">
               <Label htmlFor="city">City *</Label>
-              <Input id="city" value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} placeholder="Stockton" />
+              <Input id="city" value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} placeholder="St. Louis" />
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="radius">Service radius (mi)</Label>

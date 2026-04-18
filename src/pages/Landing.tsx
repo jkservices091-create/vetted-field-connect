@@ -13,7 +13,7 @@ const Landing = () => {
         }} />
         <div className="container relative py-20 md:py-32 grid gap-12 md:grid-cols-2 items-center">
           <div>
-            <span className="eyebrow">Vetted field labor · Stockton, CA</span>
+            <span className="eyebrow">Vetted field labor · St. Louis, MO</span>
             <h1 className="display-xl mt-4 text-trust-foreground">
               Reliable hands.<br />
               <span className="text-primary">Real jobs.</span><br />
@@ -65,7 +65,7 @@ const Landing = () => {
                 <div className="h-10 w-10 rounded-full bg-secondary flex items-center justify-center text-secondary-foreground font-bold">MR</div>
                 <div>
                   <div className="font-semibold text-sm">Marcus R.</div>
-                  <div className="text-xs text-muted-foreground">Stockton · 4 yrs exp</div>
+                  <div className="text-xs text-muted-foreground">St. Louis · 4 yrs exp</div>
                 </div>
               </div>
               <div className="mt-3 flex items-center gap-1 text-sm">
@@ -87,7 +87,7 @@ const Landing = () => {
           <Stat n="100%" label="ID verified" />
           <Stat n="2+" label="References required" />
           <Stat n="2-way" label="Ratings & reviews" />
-          <Stat n="Local" label="Stockton-area pros" />
+          <Stat n="Local" label="St. Louis-area pros" />
         </div>
       </section>
 
