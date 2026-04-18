@@ -72,7 +72,7 @@ const SignupHirer = () => {
 
         <div className="mt-8 rounded-lg bg-muted/50 border border-border p-4 text-sm text-muted-foreground flex gap-3">
           <Briefcase className="h-5 w-5 text-primary flex-shrink-0" />
-          <p>Free to post. No subscriptions. You'll only see workers who've passed our trust review.</p>
+          <p>Free to post. Pay a flat 10% service fee only when you book a worker. No subscriptions, no posting fees. <Link to="/pricing" className="text-primary font-semibold">See pricing</Link></p>
         </div>
       </section>
     </PublicLayout>
