@@ -5,6 +5,7 @@ import { Lanes } from "@/components/site/Lanes";
 import { Vetting } from "@/components/site/Vetting";
 import { Tiers } from "@/components/site/Tiers";
 import { Audiences } from "@/components/site/Audiences";
+import { Faq } from "@/components/site/Faq";
 import { Waitlist } from "@/components/site/Waitlist";
 import { Footer } from "@/components/site/Footer";
 
@@ -19,6 +20,7 @@ const Index = () => {
         <Vetting />
         <Tiers />
         <Audiences />
+        <Faq />
         <Waitlist />
       </main>
       <Footer />
