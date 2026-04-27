@@ -88,7 +88,7 @@ Every PR must:
 - [ ] Pass all CI checks (lint, type-check, tests, build).
 - [ ] Include or update tests for new behavior.
 - [ ] Update relevant documentation (`README.md`, in-app copy, etc.).
-- [ ] Confirm the contributor has completed the vetting in Section 1.
+- [ ] Confirm the contributor has completed the vetting in Section 1 (3 references + project photos).
 
 ### 3.4 Code Review
 - At least **one maintainer approval** is required before merge.
