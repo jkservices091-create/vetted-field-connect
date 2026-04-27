@@ -1,0 +1,53 @@
+name: Feature Request
+description: Suggest a new feature or improvement
+title: "[Feature]: "
+labels: ["enhancement", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting a feature. Please describe the problem first, then the proposed solution. Maintainers will respond before significant work begins.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem / Use Case
+      description: What user or workflow problem does this solve? Who benefits?
+      placeholder: As a [worker / client / admin], I need to ... because ...
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed Solution
+      description: Describe the feature. Include UI, API, or data implications if relevant.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      placeholder: Other approaches you thought about and why you ruled them out.
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Worker vetting / onboarding
+        - Client / job posting
+        - Matching / placement
+        - Payments / payouts
+        - Compliance / legal
+        - Admin tooling
+        - Mobile / iOS
+        - Lovable-synced UI
+        - Other
+    validations:
+      required: true
+  - type: checkboxes
+    id: compliance
+    attributes:
+      label: Compliance Check
+      options:
+        - label: This feature may impact worker vetting, hiring compliance, or user data (please tag `compliance-review`).
+        - label: I have searched existing issues and this is not a duplicate.
+          required: true
