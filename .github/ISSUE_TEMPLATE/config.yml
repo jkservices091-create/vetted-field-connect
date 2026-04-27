@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security Vulnerability
+    url: mailto:jkservices091@gmail.com?subject=%5BSecurity%5D
+    about: Do not file a public issue. Email maintainers privately with subject [Security].
+  - name: Code of Conduct Report
+    url: mailto:jkservices091@gmail.com?subject=%5BConduct%5D
+    about: Report Code of Conduct concerns privately with subject [Conduct].
+  - name: Contributor Vetting Submission
+    url: mailto:jkservices091@gmail.com?subject=%5BVetting%5D
+    about: Send your 3 references and project photos privately. Do not post them publicly.
