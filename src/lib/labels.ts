@@ -47,6 +47,64 @@ export const skillOptions = [
   "Hand tools",
 ] as const;
 
+// Canonical trade slugs (from public.trades; mirrored here for static labels & suggestion mapping).
+export const tradeSlugs = [
+  "site-prep-excavation",
+  "concrete-foundations",
+  "framing-rough-carpentry",
+  "roofing",
+  "siding-exterior-finish",
+  "windows-doors",
+  "insulation-air-sealing",
+  "drywall-plaster",
+  "painting",
+  "finish-carpentry-trim",
+  "flooring",
+  "tile-stone",
+  "plumbing",
+  "electrical",
+  "hvac",
+  "cabinetry-countertops",
+  "landscaping-hardscaping",
+  "handyman-punch-list",
+] as const;
+
+export type TradeSlug = (typeof tradeSlugs)[number];
+
+export const tradeTitles: Record<TradeSlug, string> = {
+  "site-prep-excavation": "Site Prep & Excavation",
+  "concrete-foundations": "Concrete & Foundations",
+  "framing-rough-carpentry": "Framing & Rough Carpentry",
+  roofing: "Roofing",
+  "siding-exterior-finish": "Siding & Exterior Finish",
+  "windows-doors": "Windows & Doors",
+  "insulation-air-sealing": "Insulation & Air Sealing",
+  "drywall-plaster": "Drywall & Plaster",
+  painting: "Painting",
+  "finish-carpentry-trim": "Finish Carpentry & Trim",
+  flooring: "Flooring",
+  "tile-stone": "Tile & Stone",
+  plumbing: "Plumbing",
+  electrical: "Electrical",
+  hvac: "HVAC",
+  "cabinetry-countertops": "Cabinetry & Countertops",
+  "landscaping-hardscaping": "Landscaping & Hardscaping",
+  "handyman-punch-list": "Handyman & Punch List",
+};
+
+// Maps the legacy `jobCategories` value → suggested trade slugs to pre-fill
+// when a hirer posts a new job. Hirer can confirm or change the selection.
+export const categoryToTradesSuggestion: Record<string, TradeSlug[]> = {
+  "Sod & turf": ["landscaping-hardscaping"],
+  "Topsoil & grading": ["landscaping-hardscaping", "site-prep-excavation"],
+  "Site cleanup": ["handyman-punch-list", "site-prep-excavation"],
+  Hauling: ["site-prep-excavation", "handyman-punch-list"],
+  "Demo support": ["site-prep-excavation", "handyman-punch-list"],
+  "Irrigation help": ["landscaping-hardscaping", "plumbing"],
+  "Site prep": ["site-prep-excavation"],
+  "General labor": ["handyman-punch-list"],
+};
+
 export const companyTypes = [
   "General contractor",
   "Landscaper",
