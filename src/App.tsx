@@ -26,10 +26,14 @@ import Verification from "./pages/work/Verification";
 import WorkerJobs from "./pages/work/Jobs";
 import WorkerJobDetail from "./pages/work/JobDetail";
 import Bookings from "./pages/work/Bookings";
+import Quizzes from "./pages/work/Quizzes";
+import QuizTake from "./pages/work/QuizTake";
+import QuizResult from "./pages/work/QuizResult";
 
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import VettingQueue from "./pages/admin/VettingQueue";
 import WorkerReview from "./pages/admin/WorkerReview";
+import QuizAttempts from "./pages/admin/QuizAttempts";
 
 import { ComingSoon } from "./pages/ComingSoon";
 
@@ -67,6 +71,9 @@ const App = () => (
           <Route path="/work/jobs" element={<ProtectedRoute requireRole="worker"><WorkerJobs /></ProtectedRoute>} />
           <Route path="/work/jobs/:id" element={<ProtectedRoute requireRole="worker"><WorkerJobDetail /></ProtectedRoute>} />
           <Route path="/work/bookings" element={<ProtectedRoute requireRole="worker"><Bookings /></ProtectedRoute>} />
+          <Route path="/work/quizzes" element={<ProtectedRoute requireRole="worker"><Quizzes /></ProtectedRoute>} />
+          <Route path="/work/quizzes/:slug" element={<ProtectedRoute requireRole="worker"><QuizTake /></ProtectedRoute>} />
+          <Route path="/work/quizzes/:slug/result/:attemptId" element={<ProtectedRoute requireRole="worker"><QuizResult /></ProtectedRoute>} />
           <Route path="/work/messages" element={<ProtectedRoute requireRole="worker"><ComingSoon role="worker" title="Messages" description="Messaging ships in Phase 5." /></ProtectedRoute>} />
           <Route path="/work/reviews" element={<ProtectedRoute requireRole="worker"><ComingSoon role="worker" title="Reviews" description="Reviews ship in Phase 6." /></ProtectedRoute>} />
 
@@ -77,6 +84,7 @@ const App = () => (
           <Route path="/admin/workers/:id" element={<ProtectedRoute requireRole="admin"><WorkerReview /></ProtectedRoute>} />
           <Route path="/admin/hiring-parties" element={<ProtectedRoute requireRole="admin"><ComingSoon role="admin" title="Hirers" description="Phase 7." /></ProtectedRoute>} />
           <Route path="/admin/jobs" element={<ProtectedRoute requireRole="admin"><ComingSoon role="admin" title="Jobs" description="Phase 7." /></ProtectedRoute>} />
+          <Route path="/admin/quiz-attempts" element={<ProtectedRoute requireRole="admin"><QuizAttempts /></ProtectedRoute>} />
           <Route path="/admin/reviews" element={<ProtectedRoute requireRole="admin"><ComingSoon role="admin" title="Reviews" description="Phase 7." /></ProtectedRoute>} />
 
           <Route path="*" element={<NotFound />} />
