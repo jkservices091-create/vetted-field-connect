@@ -32,6 +32,7 @@ import QuizTake from "./pages/work/QuizTake";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import VettingQueue from "./pages/admin/VettingQueue";
 import WorkerReview from "./pages/admin/WorkerReview";
+import AdminJobs from "./pages/admin/Jobs";
 
 import { ComingSoon } from "./pages/ComingSoon";
 
@@ -80,7 +81,7 @@ const App = () => (
           <Route path="/admin/workers" element={<ProtectedRoute requireRole="admin"><ComingSoon role="admin" title="Workers" description="Browse all workers ships in Phase 7." /></ProtectedRoute>} />
           <Route path="/admin/workers/:id" element={<ProtectedRoute requireRole="admin"><WorkerReview /></ProtectedRoute>} />
           <Route path="/admin/hiring-parties" element={<ProtectedRoute requireRole="admin"><ComingSoon role="admin" title="Hirers" description="Phase 7." /></ProtectedRoute>} />
-          <Route path="/admin/jobs" element={<ProtectedRoute requireRole="admin"><ComingSoon role="admin" title="Jobs" description="Phase 7." /></ProtectedRoute>} />
+          <Route path="/admin/jobs" element={<ProtectedRoute requireRole="admin"><AdminJobs /></ProtectedRoute>} />
           <Route path="/admin/reviews" element={<ProtectedRoute requireRole="admin"><ComingSoon role="admin" title="Reviews" description="Phase 7." /></ProtectedRoute>} />
 
           <Route path="*" element={<NotFound />} />

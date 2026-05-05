@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AppLayout } from "@/components/AppLayout";
 import { PageHeader } from "@/components/PageHeader";
@@ -9,11 +9,20 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { supabase } from "@/integrations/supabase/client";
+import { sb } from "@/lib/supabase-extras";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
-import { jobCategories, skillOptions } from "@/lib/labels";
+import {
+  jobCategories,
+  skillOptions,
+  tradeSlugs,
+  tradeTitles,
+  categoryToTradesSuggestion,
+  type TradeSlug,
+} from "@/lib/labels";
 import { z } from "zod";
 
 const schema = z.object({
@@ -48,7 +57,13 @@ const JobNew = () => {
     budget_amount: 25,
     workers_needed: 1,
     required_skills: [] as string[],
+    required_trades: [] as TradeSlug[],
+    qualification_mode: "any" as "any" | "all",
   });
+
+  // Pre-fill trades based on category, but only when the hirer hasn't yet
+  // hand-picked a different set.
+  const [tradesTouched, setTradesTouched] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -57,17 +72,36 @@ const JobNew = () => {
     });
   }, [user]);
 
+  useEffect(() => {
+    if (tradesTouched) return;
+    const suggestion = categoryToTradesSuggestion[form.category] ?? [];
+    setForm((f) => ({ ...f, required_trades: suggestion }));
+  }, [form.category, tradesTouched]);
+
   const toggleSkill = (s: string) => {
     setForm((f) => ({ ...f, required_skills: f.required_skills.includes(s) ? f.required_skills.filter((x) => x !== s) : [...f.required_skills, s] }));
+  };
+
+  const toggleTrade = (slug: TradeSlug) => {
+    setTradesTouched(true);
+    setForm((f) => ({
+      ...f,
+      required_trades: f.required_trades.includes(slug)
+        ? f.required_trades.filter((x) => x !== slug)
+        : [...f.required_trades, slug],
+    }));
   };
 
   const submit = async (status: "draft" | "open") => {
     if (!hpId) return toast.error("Set up your company profile first.");
     const parsed = schema.safeParse(form);
     if (!parsed.success) return toast.error(parsed.error.issues[0].message);
+    if (form.required_trades.length === 0) {
+      return toast.error("Pick at least one required trade so we can match qualified workers.");
+    }
 
     setSaving(true);
-    const { data, error } = await supabase
+    const { data, error } = await sb
       .from("jobs")
       .insert({
         hiring_party_id: hpId,
@@ -83,15 +117,35 @@ const JobNew = () => {
         budget_amount: form.budget_amount,
         workers_needed: form.workers_needed,
         required_skills: form.required_skills,
+        qualification_mode: form.qualification_mode,
         status,
       })
       .select("id")
       .single();
+    if (error || !data) {
+      setSaving(false);
+      return toast.error(error?.message ?? "Could not create job.");
+    }
+
+    const tradeRows = form.required_trades.map((slug) => ({
+      job_id: data.id,
+      trade_slug: slug,
+      is_required: true,
+    }));
+    const { error: tradesErr } = await sb.from("job_trades").insert(tradeRows);
     setSaving(false);
-    if (error) return toast.error(error.message);
-    toast.success(status === "open" ? "Job posted!" : "Draft saved.");
+    if (tradesErr) {
+      toast.error("Job saved, but trade tags failed: " + tradesErr.message);
+    } else {
+      toast.success(status === "open" ? "Job posted!" : "Draft saved.");
+    }
     navigate(`/hire/jobs/${data.id}`);
   };
+
+  const submitDisabled = useMemo(
+    () => saving || form.required_trades.length === 0,
+    [saving, form.required_trades.length],
+  );
 
   if (!hpId) {
     return (
@@ -124,6 +178,56 @@ const JobNew = () => {
             <Label>Workers needed</Label>
             <Input type="number" min={1} max={50} value={form.workers_needed} onChange={(e) => setForm({ ...form, workers_needed: Number(e.target.value) })} />
           </div>
+        </div>
+
+        <div className="space-y-2" data-testid="required-trades-picker">
+          <div className="flex items-baseline justify-between">
+            <Label>Required trades *</Label>
+            <span className="text-xs text-muted-foreground">
+              Workers need an active badge for at least one (or all) of these.
+            </span>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            {tradeSlugs.map((slug) => (
+              <label
+                key={slug}
+                className="flex items-center gap-2 rounded-md border border-border bg-card px-3 py-2 cursor-pointer hover:border-primary/40"
+              >
+                <Checkbox
+                  checked={form.required_trades.includes(slug)}
+                  onCheckedChange={() => toggleTrade(slug)}
+                />
+                <span className="text-sm">{tradeTitles[slug]}</span>
+              </label>
+            ))}
+          </div>
+          {form.required_trades.length === 0 && (
+            <p className="text-xs text-destructive">Pick at least one trade to publish this job.</p>
+          )}
+        </div>
+
+        <div className="space-y-2">
+          <Label>Qualification mode</Label>
+          <RadioGroup
+            value={form.qualification_mode}
+            onValueChange={(v) => setForm({ ...form, qualification_mode: v as "any" | "all" })}
+            className="grid sm:grid-cols-2 gap-2"
+          >
+            <label className="flex items-start gap-2 rounded-md border border-border bg-card px-3 py-2 cursor-pointer">
+              <RadioGroupItem value="any" id="qm-any" className="mt-0.5" />
+              <div>
+                <div className="text-sm font-medium">Any selected trade</div>
+                <div className="text-xs text-muted-foreground">Worker needs at least one matching active badge.</div>
+              </div>
+            </label>
+            <label className="flex items-start gap-2 rounded-md border border-border bg-card px-3 py-2 cursor-pointer">
+              <RadioGroupItem value="all" id="qm-all" className="mt-0.5" />
+              <div>
+                <div className="text-sm font-medium">All selected trades</div>
+                <div className="text-xs text-muted-foreground">Worker must hold every selected badge.</div>
+              </div>
+            </label>
+          </RadioGroup>
         </div>
 
         <div className="space-y-1.5">
@@ -187,11 +291,11 @@ const JobNew = () => {
         </div>
 
         <div className="flex gap-3 pt-2">
-          <Button type="submit" size="lg" disabled={saving}>
+          <Button type="submit" size="lg" disabled={submitDisabled} data-testid="submit-job">
             {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Post job
           </Button>
-          <Button type="button" variant="outline" size="lg" onClick={() => submit("draft")} disabled={saving}>
+          <Button type="button" variant="outline" size="lg" onClick={() => submit("draft")} disabled={submitDisabled}>
             Save as draft
           </Button>
         </div>

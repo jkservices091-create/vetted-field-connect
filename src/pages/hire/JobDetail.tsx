@@ -6,11 +6,16 @@ import { hirerNav } from "@/lib/nav";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
+import { sb } from "@/lib/supabase-extras";
 import { toast } from "sonner";
 import { Loader2, ArrowLeft, MapPin, Calendar, Clock, Users, CheckCircle2, XCircle } from "lucide-react";
 import { format } from "date-fns";
 import { JobStatusBadge, ApplicationStatusBadge } from "@/components/StatusBadge";
 import { TrustBadge } from "@/components/TrustBadge";
+import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
+import { tradeSlugs, tradeTitles, type TradeSlug } from "@/lib/labels";
+import { Lock, Pencil } from "lucide-react";
 
 const HirerJobDetail = () => {
   const { id } = useParams();
@@ -20,6 +25,12 @@ const HirerJobDetail = () => {
   const [apps, setApps] = useState<any[]>([]);
   const [workers, setWorkers] = useState<Record<string, any>>({});
   const [acting, setActing] = useState<string | null>(null);
+  const [jobTrades, setJobTrades] = useState<{ trade_slug: string; is_required: boolean }[]>([]);
+  const [matchCount, setMatchCount] = useState<number | null>(null);
+  const [editingTrades, setEditingTrades] = useState(false);
+  const [draftTrades, setDraftTrades] = useState<TradeSlug[]>([]);
+  const [draftMode, setDraftMode] = useState<"any" | "all">("any");
+  const [savingTrades, setSavingTrades] = useState(false);
 
   const load = async () => {
     if (!id) return;
@@ -32,6 +43,20 @@ const HirerJobDetail = () => {
       .eq("job_id", id)
       .order("created_at", { ascending: false });
     setApps(appsData ?? []);
+
+    // Required trades for this job + qualified-worker count.
+    const { data: tradesData } = await sb
+      .from("job_trades")
+      .select("trade_slug, is_required")
+      .eq("job_id", id);
+    const tradeRows = (tradesData ?? []) as { trade_slug: string; is_required: boolean }[];
+    setJobTrades(tradeRows);
+    setDraftTrades(tradeRows.filter((t) => t.is_required).map((t) => t.trade_slug as TradeSlug));
+    setDraftMode((jobData.qualification_mode as "any" | "all") ?? "any");
+
+    const { data: countData } = await sb.rpc("count_qualified_workers", { p_job_id: id });
+    if (typeof countData === "number") setMatchCount(countData);
+
     const wpIds = Array.from(new Set((appsData ?? []).map((a) => a.worker_profile_id)));
     if (wpIds.length > 0) {
       const { data: wpData } = await supabase
@@ -144,6 +169,45 @@ const HirerJobDetail = () => {
             )}
           </div>
         }
+      />
+
+      <TradesPanel
+        job={job}
+        jobTrades={jobTrades}
+        matchCount={matchCount}
+        hasApplicants={apps.length > 0}
+        editing={editingTrades}
+        draftTrades={draftTrades}
+        setDraftTrades={setDraftTrades}
+        draftMode={draftMode}
+        setDraftMode={setDraftMode}
+        onEdit={() => setEditingTrades(true)}
+        onCancel={() => {
+          setEditingTrades(false);
+          setDraftTrades(jobTrades.filter((t) => t.is_required).map((t) => t.trade_slug as TradeSlug));
+          setDraftMode((job.qualification_mode as "any" | "all") ?? "any");
+        }}
+        saving={savingTrades}
+        onSave={async () => {
+          if (draftTrades.length === 0) return toast.error("Pick at least one required trade.");
+          setSavingTrades(true);
+          const { error: modeErr } = await sb
+            .from("jobs")
+            .update({ qualification_mode: draftMode })
+            .eq("id", job.id);
+          if (modeErr) {
+            setSavingTrades(false);
+            return toast.error(modeErr.message);
+          }
+          await sb.from("job_trades").delete().eq("job_id", job.id);
+          const rows = draftTrades.map((slug) => ({ job_id: job.id, trade_slug: slug, is_required: true }));
+          const { error: insErr } = await sb.from("job_trades").insert(rows);
+          setSavingTrades(false);
+          if (insErr) return toast.error(insErr.message);
+          toast.success("Required trades updated.");
+          setEditingTrades(false);
+          load();
+        }}
       />
 
       <div className="rounded-lg border border-border bg-card p-5 mb-8">
@@ -259,6 +323,120 @@ function Detail({ icon: Icon, label, value }: { icon: any; label: string; value:
         <Icon className="h-3.5 w-3.5" /> {label}
       </div>
       <div className="text-sm font-medium">{value}</div>
+    </div>
+  );
+}
+
+type TradesPanelProps = {
+  job: { id: string; qualification_mode?: string | null };
+  jobTrades: { trade_slug: string; is_required: boolean }[];
+  matchCount: number | null;
+  hasApplicants: boolean;
+  editing: boolean;
+  draftTrades: TradeSlug[];
+  setDraftTrades: (v: TradeSlug[]) => void;
+  draftMode: "any" | "all";
+  setDraftMode: (v: "any" | "all") => void;
+  onEdit: () => void;
+  onCancel: () => void;
+  onSave: () => void;
+  saving: boolean;
+};
+
+function TradesPanel({
+  job, jobTrades, matchCount, hasApplicants,
+  editing, draftTrades, setDraftTrades, draftMode, setDraftMode,
+  onEdit, onCancel, onSave, saving,
+}: TradesPanelProps) {
+  const required = jobTrades.filter((t) => t.is_required).map((t) => t.trade_slug);
+  const mode = (job.qualification_mode as "any" | "all") ?? "any";
+  const modeLabel = mode === "all" ? "Workers must hold ALL of these badges" : "Workers must hold ANY of these badges";
+  const lockedReason = hasApplicants ? "Trade list is locked because applicants have already bid." : null;
+
+  const toggle = (slug: TradeSlug) => {
+    if (draftTrades.includes(slug)) setDraftTrades(draftTrades.filter((s) => s !== slug));
+    else setDraftTrades([...draftTrades, slug]);
+  };
+
+  return (
+    <div className="rounded-lg border border-border bg-card p-5 mb-6">
+      <div className="flex items-baseline justify-between gap-3 mb-3">
+        <div>
+          <h2 className="display-md text-lg">Required trades</h2>
+          <p className="text-xs text-muted-foreground mt-0.5">{modeLabel}.</p>
+        </div>
+        {!editing && !lockedReason && (
+          <Button size="sm" variant="outline" onClick={onEdit}>
+            <Pencil className="h-3.5 w-3.5 mr-1" /> Edit
+          </Button>
+        )}
+        {!editing && lockedReason && (
+          <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+            <Lock className="h-3.5 w-3.5" /> Locked
+          </span>
+        )}
+      </div>
+
+      {!editing && (
+        <>
+          {required.length === 0 ? (
+            <p className="text-sm text-muted-foreground">
+              No trades selected — every verified worker can see this job.
+            </p>
+          ) : (
+            <div className="flex flex-wrap gap-2">
+              {required.map((slug) => (
+                <Badge key={slug} variant="secondary">{tradeTitles[slug as TradeSlug] ?? slug}</Badge>
+              ))}
+            </div>
+          )}
+          {matchCount !== null && (
+            <p className="text-xs text-muted-foreground mt-3">
+              <strong>{matchCount}</strong> qualified worker{matchCount === 1 ? "" : "s"} match this job right now.
+            </p>
+          )}
+        </>
+      )}
+
+      {editing && (
+        <div className="space-y-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            {tradeSlugs.map((slug) => (
+              <label
+                key={slug}
+                className="flex items-center gap-2 rounded-md border border-border bg-background px-3 py-2 cursor-pointer hover:border-primary/40"
+              >
+                <Checkbox checked={draftTrades.includes(slug)} onCheckedChange={() => toggle(slug)} />
+                <span className="text-sm">{tradeTitles[slug]}</span>
+              </label>
+            ))}
+          </div>
+          <div className="flex items-center gap-3 pt-2">
+            <label className="flex items-center gap-2 text-sm">
+              <input
+                type="radio"
+                name="qmode"
+                checked={draftMode === "any"}
+                onChange={() => setDraftMode("any")}
+              />
+              Any selected
+            </label>
+            <label className="flex items-center gap-2 text-sm">
+              <input
+                type="radio"
+                name="qmode"
+                checked={draftMode === "all"}
+                onChange={() => setDraftMode("all")}
+              />
+              All selected
+            </label>
+          </div>
+          <div className="flex gap-2">
+            <Button size="sm" onClick={onSave} disabled={saving}>Save</Button>
+            <Button size="sm" variant="outline" onClick={onCancel} disabled={saving}>Cancel</Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

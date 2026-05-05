@@ -9,11 +9,15 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { supabase } from "@/integrations/supabase/client";
+import { sb } from "@/lib/supabase-extras";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
-import { Loader2, MapPin, Calendar, Clock, Users, ArrowLeft } from "lucide-react";
+import { Loader2, MapPin, Calendar, Clock, Users, ArrowLeft, Lock, CheckCircle2 } from "lucide-react";
 import { format } from "date-fns";
 import { ApplicationStatusBadge } from "@/components/StatusBadge";
+import { Badge } from "@/components/ui/badge";
+import { tradeTitles, type TradeSlug } from "@/lib/labels";
+import { qualifiesForJob, type WorkerBadge } from "@/lib/jobQualification";
 
 const WorkerJobDetail = () => {
   const { id } = useParams();
@@ -28,6 +32,8 @@ const WorkerJobDetail = () => {
   const [proposedAmount, setProposedAmount] = useState("");
   const [message, setMessage] = useState("");
   const [confirmed, setConfirmed] = useState(false);
+  const [requiredTrades, setRequiredTrades] = useState<{ trade_slug: string; is_required: boolean }[]>([]);
+  const [badges, setBadges] = useState<WorkerBadge[]>([]);
 
   useEffect(() => {
     if (!id || !user) return;
@@ -49,8 +55,20 @@ const WorkerJobDetail = () => {
         .maybeSingle();
       setCompany(hp);
 
+      const { data: tradesData } = await sb
+        .from("job_trades")
+        .select("trade_slug, is_required")
+        .eq("job_id", id);
+      setRequiredTrades((tradesData ?? []) as { trade_slug: string; is_required: boolean }[]);
+
       if (wp) {
         setWorkerProfileId(wp.id);
+        const { data: badgeData } = await sb
+          .from("trade_badges")
+          .select("trade_slug, status, expires_at")
+          .eq("worker_profile_id", wp.id)
+          .eq("status", "active");
+        setBadges((badgeData ?? []) as WorkerBadge[]);
         const { data: app } = await supabase
           .from("job_applications")
           .select("*")
@@ -71,6 +89,9 @@ const WorkerJobDetail = () => {
   const handleApply = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!workerProfileId || !job) return;
+    if (!qualification.qualifies) {
+      return toast.error("You don't have the required badge(s) for this job.");
+    }
     const amt = parseFloat(proposedAmount);
     if (isNaN(amt) || amt <= 0) return toast.error("Enter a valid bid amount.");
     if (!confirmed) return toast.error("Confirm you're available for this job.");
@@ -116,7 +137,11 @@ const WorkerJobDetail = () => {
     );
   }
 
-  const canApply = job.status === "open" && (!existingApp || existingApp.status === "withdrawn");
+  const mode: "any" | "all" = (job.qualification_mode as "any" | "all" | null) ?? "any";
+  const qualification = qualifiesForJob({ requiredTrades, mode, workerBadges: badges });
+  const requiredSlugs = requiredTrades.filter((t) => t.is_required).map((t) => t.trade_slug);
+  const canApply =
+    job.status === "open" && qualification.qualifies && (!existingApp || existingApp.status === "withdrawn");
   const isReadOnlyApp = existingApp && existingApp.status !== "submitted" && existingApp.status !== "withdrawn";
 
   return (
@@ -124,7 +149,24 @@ const WorkerJobDetail = () => {
       <Link to="/work/jobs" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-4">
         <ArrowLeft className="h-4 w-4" /> All jobs
       </Link>
-      <PageHeader eyebrow={job.category ?? "Labor"} title={job.title} description={company?.company_name ?? ""} />
+      <PageHeader
+        eyebrow={job.category ?? "Labor"}
+        title={job.title}
+        description={company?.company_name ?? ""}
+        actions={
+          requiredSlugs.length > 0 ? (
+            qualification.qualifies ? (
+              <span className="inline-flex items-center gap-1 text-sm text-primary font-medium">
+                <CheckCircle2 className="h-4 w-4" /> You qualify
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-1 text-sm text-muted-foreground font-medium">
+                <Lock className="h-4 w-4" /> Locked
+              </span>
+            )
+          ) : undefined
+        }
+      />
 
       <div className="grid lg:grid-cols-[1fr_360px] gap-8">
         <div className="space-y-6">
@@ -142,6 +184,28 @@ const WorkerJobDetail = () => {
             <div>
               <h2 className="display-md text-lg mb-2">Job description</h2>
               <p className="text-sm whitespace-pre-wrap leading-relaxed">{job.description}</p>
+            </div>
+          )}
+
+          {requiredSlugs.length > 0 && (
+            <div>
+              <h2 className="display-md text-lg mb-2">
+                Required trades
+                <span className="ml-2 text-xs uppercase tracking-wider text-muted-foreground font-semibold">
+                  {mode === "all" ? "All required" : "Any qualifies"}
+                </span>
+              </h2>
+              <div className="flex flex-wrap gap-2">
+                {requiredSlugs.map((slug) => {
+                  const have = qualification.matchedTrades.includes(slug);
+                  return (
+                    <Badge key={slug} variant={have ? "default" : "secondary"}>
+                      {have ? "✓ " : ""}
+                      {tradeTitles[slug as TradeSlug] ?? slug}
+                    </Badge>
+                  );
+                })}
+              </div>
             </div>
           )}
 
@@ -184,6 +248,32 @@ const WorkerJobDetail = () => {
               <div className="mt-4 space-y-2 text-sm">
                 <p><strong>Proposed:</strong> ${existingApp.proposed_amount}</p>
                 {existingApp.message && <p className="text-muted-foreground">{existingApp.message}</p>}
+              </div>
+            ) : !qualification.qualifies && requiredSlugs.length > 0 ? (
+              <div className="mt-4 rounded-md border border-dashed border-border bg-muted/40 p-4 text-sm" data-testid="not-qualified-block">
+                <p className="font-medium flex items-center gap-1.5">
+                  <Lock className="h-4 w-4" /> You're not qualified yet
+                </p>
+                <p className="text-muted-foreground mt-2">
+                  This hirer requires {mode === "all" ? "all" : "at least one"} of these trade badges:
+                </p>
+                <ul className="mt-2 space-y-1.5">
+                  {qualification.missingTrades.map((slug) => (
+                    <li key={slug} className="flex items-center justify-between gap-2">
+                      <span>{tradeTitles[slug as TradeSlug] ?? slug}</span>
+                      <Link
+                        to={`/work/quizzes/${slug}`}
+                        className="text-xs text-primary underline-offset-2 hover:underline"
+                      >
+                        Take quiz →
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+                <p className="text-xs text-muted-foreground mt-3">
+                  Quizzes are one part of earning a badge. You'll also need verified references and reviewed photos —
+                  see your <Link to="/work/profile" className="underline">profile</Link> for the full checklist.
+                </p>
               </div>
             ) : canApply ? (
               <form onSubmit={handleApply} className="mt-4 space-y-4">
