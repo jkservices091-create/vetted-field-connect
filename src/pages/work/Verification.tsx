@@ -50,10 +50,14 @@ const Verification = () => {
         .maybeSingle();
       setWorkerProfile(wp);
       if (wp) {
-        const [{ data: sub }, { data: existingRefs }] = await Promise.all([
+        const [{ data: sub }, { data: existingRefs }, { data: quals }, { data: allQuizzes }] = await Promise.all([
           supabase.from("verification_submissions").select("*").eq("worker_profile_id", wp.id).order("submitted_at", { ascending: false }).limit(1).maybeSingle(),
           supabase.from("worker_references").select("*").eq("worker_profile_id", wp.id),
+          supabase.from("worker_trade_qualifications").select("trade_slug, score").eq("worker_profile_id", wp.id),
+          supabase.from("quizzes").select("trade_slug, title").eq("is_active", true),
         ]);
+        setQualifications(quals ?? []);
+        setTradeTitles(Object.fromEntries((allQuizzes ?? []).map((q: any) => [q.trade_slug, q.title])));
         if (sub) {
           setExistingSubmission(sub);
           setIdDocPath(sub.id_doc_url);
