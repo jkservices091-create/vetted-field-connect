@@ -26,6 +26,8 @@ import Verification from "./pages/work/Verification";
 import WorkerJobs from "./pages/work/Jobs";
 import WorkerJobDetail from "./pages/work/JobDetail";
 import Bookings from "./pages/work/Bookings";
+import Quizzes from "./pages/work/Quizzes";
+import QuizTake from "./pages/work/QuizTake";
 
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import VettingQueue from "./pages/admin/VettingQueue";
@@ -67,6 +69,8 @@ const App = () => (
           <Route path="/work/jobs" element={<ProtectedRoute requireRole="worker"><WorkerJobs /></ProtectedRoute>} />
           <Route path="/work/jobs/:id" element={<ProtectedRoute requireRole="worker"><WorkerJobDetail /></ProtectedRoute>} />
           <Route path="/work/bookings" element={<ProtectedRoute requireRole="worker"><Bookings /></ProtectedRoute>} />
+          <Route path="/work/quizzes" element={<ProtectedRoute requireRole="worker"><Quizzes /></ProtectedRoute>} />
+          <Route path="/work/quizzes/:trade" element={<ProtectedRoute requireRole="worker"><QuizTake /></ProtectedRoute>} />
           <Route path="/work/messages" element={<ProtectedRoute requireRole="worker"><ComingSoon role="worker" title="Messages" description="Messaging ships in Phase 5." /></ProtectedRoute>} />
           <Route path="/work/reviews" element={<ProtectedRoute requireRole="worker"><ComingSoon role="worker" title="Reviews" description="Reviews ship in Phase 6." /></ProtectedRoute>} />
 
