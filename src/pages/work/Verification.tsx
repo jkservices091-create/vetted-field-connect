@@ -37,6 +37,8 @@ const Verification = () => {
   const [responses, setResponses] = useState<Record<string, string>>({});
   const [bgConsent, setBgConsent] = useState(false);
   const [terms, setTerms] = useState(false);
+  const [qualifications, setQualifications] = useState<{ trade_slug: string; score: number }[]>([]);
+  const [tradeTitles, setTradeTitles] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (!user) return;
