@@ -6,20 +6,44 @@ import { adminNav } from "@/lib/nav";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
+import { db } from "@/lib/db";
 import { getSignedUrl } from "@/lib/storage";
 import { toast } from "sonner";
-import { Loader2, ArrowLeft, FileText, ExternalLink, ShieldCheck, ShieldX, MessageCircleWarning } from "lucide-react";
+import { Loader2, ArrowLeft, FileText, ExternalLink, ShieldCheck, ShieldX, MessageCircleWarning, Check, X, Image as ImageIcon } from "lucide-react";
 import { TrustBadge } from "@/components/TrustBadge";
+import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
+import { TRADES } from "@/lib/badges";
+import { useAuth } from "@/hooks/useAuth";
+
+type TradeRefRow = {
+  id: string;
+  trade_slug: string;
+  job_completion_date: string;
+  verified_at: string | null;
+  worker_reference_id: string;
+  worker_references?: { name: string } | null;
+};
+
+type TradePhotoRow = {
+  id: string;
+  trade_slug: string;
+  storage_path: string;
+  caption: string | null;
+  reviewed_at: string | null;
+};
 
 const WorkerReview = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [worker, setWorker] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
   const [submission, setSubmission] = useState<any>(null);
   const [refs, setRefs] = useState<any[]>([]);
+  const [tradeRefs, setTradeRefs] = useState<TradeRefRow[]>([]);
+  const [tradePhotos, setTradePhotos] = useState<TradePhotoRow[]>([]);
   const [idDocUrl, setIdDocUrl] = useState<string | null>(null);
   const [feedback, setFeedback] = useState("");
   const [acting, setActing] = useState(false);
@@ -29,19 +53,52 @@ const WorkerReview = () => {
     const { data: wp } = await supabase.from("worker_profiles").select("*").eq("id", id).maybeSingle();
     if (!wp) { setLoading(false); return; }
     setWorker(wp);
-    const [{ data: prof }, { data: sub }, { data: refsData }] = await Promise.all([
+    const [{ data: prof }, { data: sub }, { data: refsData }, trRes, phRes] = await Promise.all([
       supabase.from("profiles").select("*").eq("user_id", wp.user_id).maybeSingle(),
       supabase.from("verification_submissions").select("*").eq("worker_profile_id", wp.id).order("submitted_at", { ascending: false }).limit(1).maybeSingle(),
       supabase.from("worker_references").select("*").eq("worker_profile_id", wp.id),
+      db
+        .from("trade_references")
+        .select("id, trade_slug, job_completion_date, verified_at, worker_reference_id, worker_references!inner(name, worker_profile_id)")
+        .eq("worker_references.worker_profile_id", wp.id),
+      db
+        .from("trade_project_photos")
+        .select("*")
+        .eq("worker_profile_id", wp.id)
+        .order("created_at", { ascending: false }),
     ]);
     setProfile(prof);
     setSubmission(sub);
     setRefs(refsData ?? []);
+    setTradeRefs(trRes.data ?? []);
+    setTradePhotos(phRes.data ?? []);
     if (sub?.id_doc_url) {
       const signed = await getSignedUrl("verification-docs", sub.id_doc_url, 600);
       setIdDocUrl(signed);
     }
     setLoading(false);
+  };
+
+  const verifyTradeRef = async (tradeRefId: string, verify: boolean) => {
+    if (!user) return;
+    const payload = verify
+      ? { verified_at: new Date().toISOString(), verified_by: user.id }
+      : { verified_at: null, verified_by: null };
+    const { error } = await db.from("trade_references").update(payload).eq("id", tradeRefId);
+    if (error) return toast.error(error.message);
+    toast.success(verify ? "Reference verified." : "Verification cleared.");
+    load();
+  };
+
+  const reviewTradePhoto = async (photoId: string, review: boolean) => {
+    if (!user) return;
+    const payload = review
+      ? { reviewed_at: new Date().toISOString(), reviewed_by: user.id }
+      : { reviewed_at: null, reviewed_by: null };
+    const { error } = await db.from("trade_project_photos").update(payload).eq("id", photoId);
+    if (error) return toast.error(error.message);
+    toast.success(review ? "Photo approved." : "Photo unapproved.");
+    load();
   };
 
   useEffect(() => { load(); }, [id]);
@@ -165,6 +222,75 @@ const WorkerReview = () => {
               </div>
             ) : (
               <p className="text-sm text-muted-foreground">No responses.</p>
+            )}
+          </Section>
+
+          {/* Trades — per-trade evidence */}
+          <Section title={`Trades (${tradeRefs.length} refs · ${tradePhotos.length} photos)`}>
+            {tradeRefs.length === 0 && tradePhotos.length === 0 ? (
+              <p className="text-sm text-muted-foreground">No trade evidence submitted yet.</p>
+            ) : (
+              <div className="space-y-5">
+                {TRADES.filter(
+                  (t) => tradeRefs.some((tr) => tr.trade_slug === t.slug) || tradePhotos.some((p) => p.trade_slug === t.slug),
+                ).map((t) => {
+                  const trs = tradeRefs.filter((tr) => tr.trade_slug === t.slug);
+                  const phs = tradePhotos.filter((p) => p.trade_slug === t.slug);
+                  return (
+                    <div key={t.slug} className="rounded-md border border-border p-3">
+                      <p className="font-semibold text-sm mb-2">{t.title}</p>
+                      {trs.length > 0 && (
+                        <div className="grid gap-1.5 mb-2">
+                          {trs.map((tr) => (
+                            <div key={tr.id} className="flex items-center justify-between text-sm rounded bg-muted/40 px-3 py-2">
+                              <div>
+                                <span className="font-medium">{tr.worker_references?.name ?? "Reference"}</span>
+                                <span className="text-muted-foreground"> · job done {tr.job_completion_date}</span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                {tr.verified_at ? <Badge>Verified</Badge> : <Badge variant="outline">Pending</Badge>}
+                                {tr.verified_at ? (
+                                  <Button size="sm" variant="ghost" onClick={() => verifyTradeRef(tr.id, false)}>
+                                    <X className="h-4 w-4" />
+                                  </Button>
+                                ) : (
+                                  <Button size="sm" variant="outline" onClick={() => verifyTradeRef(tr.id, true)}>
+                                    <Check className="h-4 w-4 mr-1" /> Verify
+                                  </Button>
+                                )}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      {phs.length > 0 && (
+                        <div className="grid gap-1.5">
+                          {phs.map((p) => (
+                            <div key={p.id} className="flex items-center justify-between text-sm rounded bg-muted/40 px-3 py-2">
+                              <div className="flex items-center gap-2 truncate">
+                                <ImageIcon className="h-4 w-4 text-muted-foreground" />
+                                <span className="truncate">{p.caption || p.storage_path.split("/").pop()}</span>
+                              </div>
+                              <div className="flex items-center gap-2 shrink-0">
+                                {p.reviewed_at ? <Badge>Reviewed</Badge> : <Badge variant="outline">Pending</Badge>}
+                                {p.reviewed_at ? (
+                                  <Button size="sm" variant="ghost" onClick={() => reviewTradePhoto(p.id, false)}>
+                                    <X className="h-4 w-4" />
+                                  </Button>
+                                ) : (
+                                  <Button size="sm" variant="outline" onClick={() => reviewTradePhoto(p.id, true)}>
+                                    <Check className="h-4 w-4 mr-1" /> Approve
+                                  </Button>
+                                )}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
             )}
           </Section>
 

@@ -26,11 +26,16 @@ import Verification from "./pages/work/Verification";
 import WorkerJobs from "./pages/work/Jobs";
 import WorkerJobDetail from "./pages/work/JobDetail";
 import Bookings from "./pages/work/Bookings";
+import Badges from "./pages/work/Badges";
+import TradeEvidence from "./pages/work/TradeEvidence";
+import PublicProfileSettings from "./pages/work/PublicProfileSettings";
 
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import VettingQueue from "./pages/admin/VettingQueue";
 import WorkerReview from "./pages/admin/WorkerReview";
+import TradeBadges from "./pages/admin/TradeBadges";
 
+import PublicWorkerProfile from "./pages/PublicWorkerProfile";
 import { ComingSoon } from "./pages/ComingSoon";
 
 const queryClient = new QueryClient();
@@ -50,6 +55,7 @@ const App = () => (
           <Route path="/for-hiring" element={<SignupHirer />} />
           <Route path="/login" element={<Login />} />
           <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/p/:handle" element={<PublicWorkerProfile />} />
 
           {/* Hiring party */}
           <Route path="/hire" element={<ProtectedRoute requireRole="hiring_party"><HirerDashboard /></ProtectedRoute>} />
@@ -67,12 +73,16 @@ const App = () => (
           <Route path="/work/jobs" element={<ProtectedRoute requireRole="worker"><WorkerJobs /></ProtectedRoute>} />
           <Route path="/work/jobs/:id" element={<ProtectedRoute requireRole="worker"><WorkerJobDetail /></ProtectedRoute>} />
           <Route path="/work/bookings" element={<ProtectedRoute requireRole="worker"><Bookings /></ProtectedRoute>} />
+          <Route path="/work/badges" element={<ProtectedRoute requireRole="worker"><Badges /></ProtectedRoute>} />
+          <Route path="/work/trade-evidence/:slug" element={<ProtectedRoute requireRole="worker"><TradeEvidence /></ProtectedRoute>} />
+          <Route path="/work/profile/public" element={<ProtectedRoute requireRole="worker"><PublicProfileSettings /></ProtectedRoute>} />
           <Route path="/work/messages" element={<ProtectedRoute requireRole="worker"><ComingSoon role="worker" title="Messages" description="Messaging ships in Phase 5." /></ProtectedRoute>} />
           <Route path="/work/reviews" element={<ProtectedRoute requireRole="worker"><ComingSoon role="worker" title="Reviews" description="Reviews ship in Phase 6." /></ProtectedRoute>} />
 
           {/* Admin */}
           <Route path="/admin" element={<ProtectedRoute requireRole="admin"><AdminDashboard /></ProtectedRoute>} />
           <Route path="/admin/queue" element={<ProtectedRoute requireRole="admin"><VettingQueue /></ProtectedRoute>} />
+          <Route path="/admin/trade-badges" element={<ProtectedRoute requireRole="admin"><TradeBadges /></ProtectedRoute>} />
           <Route path="/admin/workers" element={<ProtectedRoute requireRole="admin"><ComingSoon role="admin" title="Workers" description="Browse all workers ships in Phase 7." /></ProtectedRoute>} />
           <Route path="/admin/workers/:id" element={<ProtectedRoute requireRole="admin"><WorkerReview /></ProtectedRoute>} />
           <Route path="/admin/hiring-parties" element={<ProtectedRoute requireRole="admin"><ComingSoon role="admin" title="Hirers" description="Phase 7." /></ProtectedRoute>} />
