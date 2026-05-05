@@ -1,1 +1,3 @@
 project_id = "tarzpxwcigeotktebqxh"
+[functions.grade-quiz]
+verify_jwt = true
