@@ -10,13 +10,14 @@ export const hirerNav: NavItem[] = [
   { to: "/hire/profile", label: "Company profile", icon: Building2 },
 ];
 
-import { Search, ClipboardCheck, User, BookCheck } from "lucide-react";
+import { Search, ClipboardCheck, User, BookCheck, GraduationCap } from "lucide-react";
 
 export const workerNav: NavItem[] = [
   { to: "/work", label: "Dashboard", icon: LayoutDashboard },
   { to: "/work/jobs", label: "Find work", icon: Search },
   { to: "/work/bookings", label: "My bookings", icon: BookCheck },
   { to: "/work/verification", label: "Verification", icon: ClipboardCheck },
+  { to: "/work/quizzes", label: "Placement quizzes", icon: GraduationCap },
   { to: "/work/messages", label: "Messages", icon: MessageSquare },
   { to: "/work/reviews", label: "Reviews", icon: Star },
   { to: "/work/profile", label: "Profile", icon: User },
