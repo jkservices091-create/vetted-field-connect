@@ -211,8 +211,39 @@ const Verification = () => {
       )}
 
       <form onSubmit={handleSubmit} className="grid gap-8 max-w-2xl">
-        {/* Step 1 — ID */}
-        <Section number={1} title="Photo ID" description="Driver's license or state ID. Used only for verification.">
+        {/* Step 1 — Trade knowledge */}
+        <Section number={1} title="Trade knowledge quiz" description="Pass at least one trade quiz (16/20). This proves you actually know the work — required to get verified.">
+          <div className="space-y-3">
+            {qualifications.length > 0 ? (
+              <div className="space-y-2">
+                {qualifications.map((q) => (
+                  <div key={q.trade_slug} className="flex items-center gap-2 rounded-md border border-success/30 bg-success/10 p-3">
+                    <CheckCircle2 className="h-4 w-4 text-success" />
+                    <span className="text-sm font-semibold">{tradeTitles[q.trade_slug] ?? q.trade_slug}</span>
+                    <span className="ml-auto text-xs text-muted-foreground">Score: {q.score}/20</span>
+                  </div>
+                ))}
+                <Button asChild type="button" variant="outline" size="sm">
+                  <Link to="/work/quizzes"><GraduationCap className="h-4 w-4 mr-1" /> Take another quiz</Link>
+                </Button>
+              </div>
+            ) : (
+              <div className="rounded-md border border-warning/40 bg-warning/10 p-4 flex items-start gap-3">
+                <GraduationCap className="h-5 w-5 text-warning mt-0.5" />
+                <div className="flex-1">
+                  <p className="font-semibold text-sm">No trade quizzes passed yet</p>
+                  <p className="text-sm text-muted-foreground mt-1">You must pass at least one trade quiz before submitting your application.</p>
+                  <Button asChild type="button" size="sm" className="mt-3">
+                    <Link to="/work/quizzes">Browse trade quizzes</Link>
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
+        </Section>
+
+        {/* Step 2 — ID */}
+        <Section number={2} title="Photo ID" description="Driver's license or state ID. Used only for verification.">
           {idDocPath && !idFile && (
             <p className="text-sm text-muted-foreground">✓ ID on file. Upload a new one to replace.</p>
           )}
@@ -228,8 +259,8 @@ const Verification = () => {
           </div>
         </Section>
 
-        {/* Step 2 — References */}
-        <Section number={2} title="References" description="At least 2. Past employer, foreman, or someone you've crewed with.">
+        {/* Step 3 — References */}
+        <Section number={3} title="References" description="At least 2. Past employer, foreman, or someone you've crewed with.">
           <div className="space-y-4">
             {refs.map((r, i) => (
               <div key={i} className="rounded-md border border-border bg-card p-4 space-y-3">
@@ -269,8 +300,8 @@ const Verification = () => {
           </div>
         </Section>
 
-        {/* Step 3 — Situational */}
-        <Section number={3} title="Quick scenarios" description="Short answers. We're checking judgment, not grammar.">
+        {/* Step 4 — Situational */}
+        <Section number={4} title="Quick scenarios" description="Short answers. We're checking judgment, not grammar.">
           <div className="space-y-4">
             {SITUATIONAL_QUESTIONS.map((q) => (
               <div key={q.id} className="space-y-1.5">
@@ -286,8 +317,8 @@ const Verification = () => {
           </div>
         </Section>
 
-        {/* Step 4 — Consent */}
-        <Section number={4} title="Consent & terms">
+        {/* Step 5 — Consent */}
+        <Section number={5} title="Consent & terms">
           <div className="space-y-3">
             <label className="flex items-start gap-3 rounded-md border border-border bg-card p-4 cursor-pointer">
               <Checkbox checked={bgConsent} onCheckedChange={(v) => setBgConsent(!!v)} disabled={isLocked} className="mt-0.5" />
@@ -303,8 +334,6 @@ const Verification = () => {
             </label>
           </div>
         </Section>
-
-        {!isLocked && (
           <div className="flex items-center gap-3">
             <Button type="submit" size="lg" disabled={submitting}>
               {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
