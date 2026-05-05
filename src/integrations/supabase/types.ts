@@ -737,49 +737,21 @@ export type Database = {
       }
     }
     Views: {
-      quiz_questions_public: {
-        Row: {
-          choice_a: string | null
-          choice_b: string | null
-          choice_c: string | null
-          choice_d: string | null
-          id: string | null
-          position: number | null
-          prompt: string | null
-          quiz_id: string | null
-        }
-        Insert: {
-          choice_a?: string | null
-          choice_b?: string | null
-          choice_c?: string | null
-          choice_d?: string | null
-          id?: string | null
-          position?: number | null
-          prompt?: string | null
-          quiz_id?: string | null
-        }
-        Update: {
-          choice_a?: string | null
-          choice_b?: string | null
-          choice_c?: string | null
-          choice_d?: string | null
-          id?: string | null
-          position?: number | null
-          prompt?: string | null
-          quiz_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "quiz_questions_quiz_id_fkey"
-            columns: ["quiz_id"]
-            isOneToOne: false
-            referencedRelation: "quizzes"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
+      [_ in never]: never
     }
     Functions: {
+      get_quiz_questions: {
+        Args: { _quiz_id: string }
+        Returns: {
+          choice_a: string
+          choice_b: string
+          choice_c: string
+          choice_d: string
+          prompt: string
+          q_id: string
+          q_position: number
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
