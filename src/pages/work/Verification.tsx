@@ -83,6 +83,7 @@ const Verification = () => {
     if (!user || !workerProfile) return;
 
     // Validate
+    if (qualifications.length < 1) return toast.error("Pass at least one trade knowledge quiz before submitting.");
     if (!idFile && !idDocPath) return toast.error("Upload a photo of your ID.");
     const validRefs = refs.filter((r) => r.name.trim() && r.phone.trim());
     if (validRefs.length < 2) return toast.error("Add at least 2 references with name and phone.");
