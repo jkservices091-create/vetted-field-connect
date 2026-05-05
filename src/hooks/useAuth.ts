@@ -11,39 +11,48 @@ export function useAuth() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Set up listener FIRST
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, sess) => {
+    let active = true;
+
+    const applySession = async (sess: Session | null) => {
+      if (!active) return;
+
+      setLoading(true);
       setSession(sess);
       setUser(sess?.user ?? null);
-      if (sess?.user) {
-        // defer to avoid deadlock
-        setTimeout(() => loadRoles(sess.user.id), 0);
-      } else {
+
+      if (!sess?.user) {
         setRoles([]);
+        setLoading(false);
+        return;
       }
-    });
 
-    // Then check session
-    supabase.auth.getSession().then(({ data: { session: sess } }) => {
-      setSession(sess);
-      setUser(sess?.user ?? null);
-      if (sess?.user) loadRoles(sess.user.id);
+      const { data } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", sess.user.id);
+
+      if (!active) return;
+
+      setRoles((data ?? []).map((r) => r.role as AppRole));
       setLoading(false);
+    };
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, sess) => {
+      void applySession(sess);
     });
 
-    return () => subscription.unsubscribe();
+    void supabase.auth.getSession().then(({ data: { session: sess } }) => {
+      void applySession(sess);
+    });
+
+    return () => {
+      active = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
-  const loadRoles = async (userId: string) => {
-    const { data } = await supabase
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", userId);
-    setRoles((data ?? []).map((r) => r.role as AppRole));
-    setLoading(false);
-  };
-
   const signOut = async () => {
+    setLoading(true);
     await supabase.auth.signOut();
     setRoles([]);
   };
