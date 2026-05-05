@@ -335,6 +335,149 @@ export type Database = {
         }
         Relationships: []
       }
+      quiz_attempts: {
+        Row: {
+          answers: Json
+          created_at: string
+          id: string
+          passed: boolean | null
+          quiz_id: string
+          quiz_version: number
+          score: number | null
+          started_at: string
+          submitted_at: string | null
+          worker_profile_id: string
+        }
+        Insert: {
+          answers?: Json
+          created_at?: string
+          id?: string
+          passed?: boolean | null
+          quiz_id: string
+          quiz_version: number
+          score?: number | null
+          started_at?: string
+          submitted_at?: string | null
+          worker_profile_id: string
+        }
+        Update: {
+          answers?: Json
+          created_at?: string
+          id?: string
+          passed?: boolean | null
+          quiz_id?: string
+          quiz_version?: number
+          score?: number | null
+          started_at?: string
+          submitted_at?: string | null
+          worker_profile_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quiz_attempts_quiz_id_fkey"
+            columns: ["quiz_id"]
+            isOneToOne: false
+            referencedRelation: "quizzes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quiz_attempts_worker_profile_id_fkey"
+            columns: ["worker_profile_id"]
+            isOneToOne: false
+            referencedRelation: "worker_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quiz_questions: {
+        Row: {
+          choice_a: string
+          choice_b: string
+          choice_c: string
+          choice_d: string
+          correct_choice: string
+          created_at: string
+          explanation: string | null
+          id: string
+          position: number
+          prompt: string
+          quiz_id: string
+        }
+        Insert: {
+          choice_a: string
+          choice_b: string
+          choice_c: string
+          choice_d: string
+          correct_choice: string
+          created_at?: string
+          explanation?: string | null
+          id?: string
+          position: number
+          prompt: string
+          quiz_id: string
+        }
+        Update: {
+          choice_a?: string
+          choice_b?: string
+          choice_c?: string
+          choice_d?: string
+          correct_choice?: string
+          created_at?: string
+          explanation?: string | null
+          id?: string
+          position?: number
+          prompt?: string
+          quiz_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quiz_questions_quiz_id_fkey"
+            columns: ["quiz_id"]
+            isOneToOne: false
+            referencedRelation: "quizzes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quizzes: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          passing_score: number
+          time_limit_minutes: number
+          title: string
+          total_questions: number
+          trade_slug: string
+          updated_at: string
+          version: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          passing_score?: number
+          time_limit_minutes?: number
+          title: string
+          total_questions?: number
+          trade_slug: string
+          updated_at?: string
+          version?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          passing_score?: number
+          time_limit_minutes?: number
+          title?: string
+          total_questions?: number
+          trade_slug?: string
+          updated_at?: string
+          version?: number
+        }
+        Relationships: []
+      }
       reviews: {
         Row: {
           communication_score: number | null
@@ -557,9 +700,84 @@ export type Database = {
           },
         ]
       }
+      worker_trade_qualifications: {
+        Row: {
+          id: string
+          passed_at: string
+          quiz_version: number
+          score: number
+          trade_slug: string
+          worker_profile_id: string
+        }
+        Insert: {
+          id?: string
+          passed_at?: string
+          quiz_version: number
+          score: number
+          trade_slug: string
+          worker_profile_id: string
+        }
+        Update: {
+          id?: string
+          passed_at?: string
+          quiz_version?: number
+          score?: number
+          trade_slug?: string
+          worker_profile_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "worker_trade_qualifications_worker_profile_id_fkey"
+            columns: ["worker_profile_id"]
+            isOneToOne: false
+            referencedRelation: "worker_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
-      [_ in never]: never
+      quiz_questions_public: {
+        Row: {
+          choice_a: string | null
+          choice_b: string | null
+          choice_c: string | null
+          choice_d: string | null
+          id: string | null
+          position: number | null
+          prompt: string | null
+          quiz_id: string | null
+        }
+        Insert: {
+          choice_a?: string | null
+          choice_b?: string | null
+          choice_c?: string | null
+          choice_d?: string | null
+          id?: string | null
+          position?: number | null
+          prompt?: string | null
+          quiz_id?: string | null
+        }
+        Update: {
+          choice_a?: string | null
+          choice_b?: string | null
+          choice_c?: string | null
+          choice_d?: string | null
+          id?: string | null
+          position?: number | null
+          prompt?: string | null
+          quiz_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quiz_questions_quiz_id_fkey"
+            columns: ["quiz_id"]
+            isOneToOne: false
+            referencedRelation: "quizzes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       has_role: {
